@@ -1,13 +1,10 @@
-
 <template>
   <section>
     <h2>Acerca de</h2>
-    <p>Aplicación base en Vue 2.7 para practicar la migración a Vue 3.</p>
+    <p>Aplicación base migrada de Vue 2 a Vue 3.</p>
+    <p>Incluye router, Pinia y componentes con script setup.</p>
   </section>
 </template>
 
-<script>
-export default {
-  name: 'AboutView'
-}
+<script setup>
 </script>

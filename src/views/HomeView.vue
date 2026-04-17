@@ -8,45 +8,32 @@
     />
 
     <ul>
-      <li v-for="(task, index) in tasks" :key="index">
+      <li v-for="(task, index) in taskStore.tasks" :key="index">
         {{ task }}
       </li>
     </ul>
   </section>
 </template>
 
-<script>
+<script setup>
+import { ref, computed } from 'vue'
 import TaskForm from '../components/TaskForm.vue'
 import { useTaskStore } from '../store/task'
 
-export default {
-  name: 'HomeView',
-  components: {
-    TaskForm
-  },
-  data() {
-    return {
-      subtitle: 'lista de tareas',
-      newTask: ''
-    }
-  },
-  computed: {
-    taskStore() {
-      return useTaskStore()
-    },
-    tasks() {
-      return this.taskStore.tasks
-    },
-    subtitleUppercase() {
-      return this.subtitle.toUpperCase()
-    }
-  },
-  methods: {
-    handleSave() {
-      if (!this.newTask.trim()) return
-      this.taskStore.addTask(this.newTask)
-      this.newTask = ''
-    }
-  }
+// store
+const taskStore = useTaskStore()
+
+// estado local
+const subtitle = ref('lista de tareas')
+const newTask = ref('')
+
+// computed
+const subtitleUppercase = computed(() => subtitle.value.toUpperCase())
+
+// acciones
+function handleSave() {
+  if (!newTask.value.trim()) return
+  taskStore.addTask(newTask.value)
+  newTask.value = ''
 }
 </script>

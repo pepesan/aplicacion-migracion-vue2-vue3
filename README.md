@@ -661,6 +661,108 @@ npm run serve
 ```
 Accedemos a http://localhost:8080/ para ver la aplicación en funcionamiento con Vue 3 y Pinia sin ninguna referencia a Vuex.
 
+## Refactorización a Composition API
+Ahora que ya hemos tenemos todo migrado ya deberemos poder empezar a refactorizar el código para aprovechar al máximo las nuevas características de Vue 3, como el Composition API.
+Empezamos con el componente HomeView.vue, refactorizándolo para utilizar el Composition API en lugar de la sintaxis de Options API:
+```vue
+<template>
+  <section>
+    <h2>{{ subtitleUppercase }}</h2>
+
+    <TaskForm
+      v-model="newTask"
+      @save="handleSave"
+    />
+
+    <ul>
+      <li v-for="(task, index) in taskStore.tasks" :key="index">
+        {{ task }}
+      </li>
+    </ul>
+  </section>
+</template>
+
+<script setup>
+import { computed, ref } from 'vue'
+import TaskForm from '../components/TaskForm.vue'
+import { useTaskStore } from '../stores/task'
+
+defineOptions({
+  name: 'HomeView'
+})
+
+const taskStore = useTaskStore()
+
+const subtitle = ref('lista de tareas')
+const newTask = ref('')
+
+const subtitleUppercase = computed(() => subtitle.value.toUpperCase())
+
+function handleSave() {
+  if (!newTask.value.trim()) return
+  taskStore.addTask(newTask.value)
+  newTask.value = ''
+}
+</script>
+```
+Seguimos con el componente BaseButton.vue, refactorizándolo para utilizar el Composition API:
+```vue
+<template>
+  <button class="base-button">
+    <slot />
+  </button>
+</template>
+
+<script setup>
+defineOptions({
+  name: 'BaseButton'
+})
+</script>
+
+<style scoped>
+.base-button {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+</style>
+```
+En este caso, el componente BaseButton es muy simple y no tiene estado ni lógica compleja, por lo que no es necesario utilizar el Composition API para refactorizarlo.
+
+Seguimos con el TaskForm.vue, refactorizándolo para utilizar el Composition API:
+```vue
+<template>
+  <div>
+    <input
+      :value="modelValue"
+      @input="handleInput"
+      placeholder="Nueva tarea"
+    />
+
+    <BaseButton @click="emit('save')">
+      Añadir
+    </BaseButton>
+  </div>
+</template>
+
+<script setup>
+defineOptions({
+  name: 'TaskForm'
+})
+
+const props = defineProps({
+  modelValue: {
+    type: String,
+    default: ''
+  }
+})
+
+const emit = defineEmits(['update:modelValue', 'save'])
+
+function handleInput(event) {
+  emit('update:modelValue', event.target.value)
+}
+</script>
+```
 
 
 

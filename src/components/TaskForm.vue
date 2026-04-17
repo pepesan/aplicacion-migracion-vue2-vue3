@@ -2,28 +2,31 @@
   <div>
     <input
         :value="modelValue"
-        @input="$emit('update:modelValue', $event.target.value)"
+        @input="handleInput"
         placeholder="Nueva tarea"
     />
 
-    <BaseButton @click="$emit('save')">
+    <BaseButton @click="emit('save')">
       Añadir
     </BaseButton>
   </div>
 </template>
 
-<script>
-export default {
-  name: 'TaskForm',
-  compatConfig: {
-    COMPONENT_V_MODEL: false
-  },
-  props: {
-    modelValue: {
-      type: String,
-      default: ''
-    }
-  },
-  emits: ['update:modelValue', 'save']
+<script setup>
+defineOptions({
+  name: 'TaskForm'
+})
+
+const props = defineProps({
+  modelValue: {
+    type: String,
+    default: ''
+  }
+})
+
+const emit = defineEmits(['update:modelValue', 'save'])
+
+function handleInput(event) {
+  emit('update:modelValue', event.target.value)
 }
 </script>

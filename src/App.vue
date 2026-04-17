@@ -14,13 +14,8 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'App',
-  data() {
-    return {
-      title: 'Demo Vue 2.7'
-    }
-  }
-}
+<script setup>
+import { ref } from 'vue'
+
+const title = ref('Demo Vue 3')
 </script>

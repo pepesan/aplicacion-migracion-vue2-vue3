@@ -4,13 +4,10 @@
   </button>
 </template>
 
-<script>
-export default {
-  name: 'BaseButton',
-  compatConfig: {
-    INSTANCE_LISTENERS: false
-  }
-}
+<script setup>
+defineOptions({
+  name: 'BaseButton'
+})
 </script>
 
 <style scoped>

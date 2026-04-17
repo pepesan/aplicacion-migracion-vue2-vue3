@@ -2,8 +2,14 @@
   <section>
     <h2>Nuevo componente Vue 3</h2>
 
-    <input v-model="task" placeholder="Nueva tarea" />
-    <button @click="saveTask">Añadir</button>
+    <input
+        v-model="task"
+        placeholder="Nueva tarea"
+    />
+
+    <BaseButton @click="saveTask">
+      Añadir
+    </BaseButton>
 
     <p v-if="lastSaved">
       Última tarea guardada: {{ lastSaved }}
