@@ -6,7 +6,10 @@
 
 <script>
 export default {
-  name: 'BaseButton'
+  name: 'BaseButton',
+  compatConfig: {
+    INSTANCE_LISTENERS: false
+  }
 }
 </script>
 

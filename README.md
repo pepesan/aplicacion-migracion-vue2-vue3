@@ -276,4 +276,128 @@ Antes teníamos:
 Ahora simplemente eliminamos el v-on="$listeners" ya que en Vue 3 los eventos se manejan automáticamente a través de $attrs.
 Volvemos a probar si arranca y va todo bien
 
+## Quitando la compatibilidad con Vue 2
+Ahora podemos empezar a probar a eliminar la compatibilidad con Vue 2 para aprovechar las nuevas características de Vue 3.
+Empezando por el componente TaskForm.vue, podemos eliminar la compatibilidad con Vue 2 :
+```vue
+<template>
+  <div>
+    <input
+        :value="modelValue"
+        @input="$emit('update:modelValue', $event.target.value)"
+        placeholder="Nueva tarea"
+    />
+
+    <BaseButton @click="$emit('save')">
+      Añadir
+    </BaseButton>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'TaskForm',
+  compatConfig: {
+    COMPONENT_V_MODEL: false
+  },
+  props: {
+    modelValue: {
+      type: String,
+      default: ''
+    }
+  },
+  emits: ['update:modelValue', 'save']
+}
+</script>
+```
+Al establecer `COMPONENT_V_MODEL: false` en la configuración de compatibilidad del componente, estamos indicando que este componente
+ya no es compatible con la sintaxis de v-model de Vue 2, y que solo utilizará la nueva sintaxis de Vue 3. 
+Debería desaparecer el aviso de compatibilidad relacionado con v-model en la consola del navegador.
+
+Hacemos lo propio con el componente BaseButton.vue para eliminar la compatibilidad con Vue 2:
+```vue
+<template>
+  <button class="base-button">
+    <slot />
+  </button>
+</template>
+
+<script>
+export default {
+  name: 'BaseButton',
+  compatConfig: {
+    INSTANCE_LISTENERS: false
+  }
+}
+</script>
+
+<style scoped>
+.base-button {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+</style>
+```
+Al establecer `INSTANCE_LISTENERS: false` en la configuración de compatibilidad del componente,
+estamos indicando que este componente ya no es compatible con la sintaxis de $listeners de Vue 2, y que solo utilizará la nueva sintaxis de Vue 3 para manejar los eventos.
+
+
+Quitamos la compatibilidad con Vue 2 en el vue.config.js eliminando la configuración de compatibilidad global:
+```javascript
+// vue.config.js
+module.exports = {
+    chainWebpack: (config) => {
+        // quitamos la configuración de compatibilidad global para Vue 2
+        // config.resolve.alias.set('vue', '@vue/compat')
+        config.module
+            .rule('vue')
+            .use('vue-loader')
+            .tap((options) => {
+                return {
+                    ...options,
+                    // comentamos la configuración de compatibilidad de compilación para Vue 2
+                    /* compilerOptions: {
+                        compatConfig: {
+                            MODE: 2
+                        }
+                    }*/
+                }
+            })
+    }
+}
+```
+Quitamos el @vue/compat de las dependencias en el package.json ya que ya no necesitamos la compatibilidad con Vue 2:
+```json
+{
+  "name": "vue2-migration-demo",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve"
+  },
+  "dependencies": {
+    "vue": "^3.1.0",
+    "vue-router": "^4.0.0",
+    "vuex": "^4.0.0"
+  },
+  "devDependencies": {
+    "@vue/cli-service": "^5.0.8",
+    "@vue/compiler-sfc": "^3.1.0"
+  }
+}
+```
+ejecutamos npm install para actualizar las dependencias y eliminar @vue/compat:
+```bash
+npm install
+```
+Volvemos a probar si arranca y va todo bien:
+```bash
+npm run serve
+```
+Accedemos a http://localhost:8080/ para ver la aplicación en funcionamiento con Vue 3 sin compatibilidad para Vue 2.
+Si al quitar @vue/compat algo rompe, significa que todavía dependías de comportamiento de Vue 2.
+
+
+
+
+
 

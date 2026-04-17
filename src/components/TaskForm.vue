@@ -15,6 +15,9 @@
 <script>
 export default {
   name: 'TaskForm',
+  compatConfig: {
+    COMPONENT_V_MODEL: false
+  },
   props: {
     modelValue: {
       type: String,
