@@ -183,3 +183,97 @@ export default {
 }
 </script>
 ```
+Volvemos a probar si arranca y va todo bien
+```bash
+npm run serve
+```
+Accedemos a http://localhost:8080/ para ver la aplicación en funcionamiento con Vue 3 pero con compatibilidad para Vue 2.
+
+## Revisar los avisos de compabilidad
+Revisamos la consola del navegador para ver los avisos de compatibilidad que nos indican qué partes del código aún están utilizando sintaxis o características de Vue 2 que no son compatibles con Vue 3. 
+Estos avisos nos ayudarán a identificar qué partes del código debemos actualizar para aprovechar las nuevas características de Vue 3 y eliminar la compatibilidad con Vue 2.
+Por ejemplo, podríamos ver un aviso como este:
+```
+[Vue warn]: (deprecation COMPONENT_V_MODEL) v-model usage on component has changed in Vue 3. Component that expects to work with v-model should now use the "modelValue" prop and emit the "update:modelValue" event. You can update the usage and then opt-in to Vue 3 behavior on a per-component basis with `compatConfig: { COMPONENT_V_MODEL: false }`.
+  Details: https://v3-migration.vuejs.org/breaking-changes/v-model.html 
+  at <TaskForm modelValue="" onUpdate:modelValue=fn onSave=fn<bound handleSave> >
+```
+Este aviso nos indica que el componente TaskForm está utilizando la sintaxis de v-model de Vue 2, y que debemos actualizarlo para utilizar la nueva sintaxis de Vue 3.
+O este otro:
+```
+[Vue warn]: (deprecation INSTANCE_LISTENERS) vm.$listeners has been removed. In Vue 3, parent v-on listeners are included in vm.$attrs and it is no longer necessary to separately use v-on="$listeners" if you are already using v-bind="$attrs". (Note: the Vue 3 behavior only applies if this compat config is disabled)
+  Details: https://v3-migration.vuejs.org/breaking-changes/listeners-removed.html 
+  at <BaseButton onClick=fn > 
+  at <TaskForm onSave=fn<bound handleSave> value="" onModelCompat:input=fn > 
+  at <HomeView onVnodeUnmounted=fn<onVnodeUnmounted> ref=Ref< undefined > > 
+  at <RouterView> 
+  at <App>
+```
+Este aviso nos indica que el componente BaseButton está utilizando la sintaxis de $listeners de Vue 2, y que debemos actualizarlo para utilizar la nueva sintaxis de Vue 3.
+## Actualizar el código para Vue 3
+Empezamos por actualizar el componente TaskForm.vue para utilizar la nueva sintaxis de v-model de Vue 3:
+```vue
+<template>
+  <div>
+    <input
+      :value="modelValue"
+      @input="$emit('update:modelValue', $event.target.value)"
+      placeholder="Nueva tarea"
+    />
+
+    <BaseButton @click="$emit('save')">
+      Añadir
+    </BaseButton>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'TaskForm',
+  props: {
+    modelValue: {
+      type: String,
+      default: ''
+    }
+  },
+  emits: ['update:modelValue', 'save']
+}
+</script>
+```
+Antes teníamos:
+
+props.value
+this.$emit('input', ...)
+
+Ahora debemos cambiarlo a:
+
+props.modelValue
+this.$emit('update:modelValue', ...)
+
+Hacemos lo propio con el componente BaseButton.vue para eliminar la sintaxis de $listeners:
+```vue
+<template>
+  <button class="base-button">
+    <slot />
+  </button>
+</template>
+
+<script>
+export default {
+  name: 'BaseButton'
+}
+</script>
+
+<style scoped>
+.base-button {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+</style>
+```
+Antes teníamos:
+<button class="base-button" v-on="$listeners">
+Ahora simplemente eliminamos el v-on="$listeners" ya que en Vue 3 los eventos se manejan automáticamente a través de $attrs.
+Volvemos a probar si arranca y va todo bien
+
+
