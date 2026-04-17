@@ -1,6 +1,6 @@
 <template>
   <section>
-    <h2>{{ subtitle | uppercase }}</h2>
+    <h2>{{ subtitleUppercase }}</h2>
 
     <TaskForm
         v-model="newTask"
@@ -32,6 +32,9 @@ export default {
   computed: {
     tasks() {
       return this.$store.state.tasks
+    },
+    subtitleUppercase() {
+      return this.subtitle.toUpperCase()
     }
   },
   methods: {
