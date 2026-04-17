@@ -17,6 +17,7 @@
 
 <script>
 import TaskForm from '../components/TaskForm.vue'
+import { useTaskStore } from '../store/task'
 
 export default {
   name: 'HomeView',
@@ -30,8 +31,11 @@ export default {
     }
   },
   computed: {
+    taskStore() {
+      return useTaskStore()
+    },
     tasks() {
-      return this.$store.state.tasks
+      return this.taskStore.tasks
     },
     subtitleUppercase() {
       return this.subtitle.toUpperCase()
@@ -40,7 +44,7 @@ export default {
   methods: {
     handleSave() {
       if (!this.newTask.trim()) return
-      this.$store.dispatch('addTask', this.newTask)
+      this.taskStore.addTask(this.newTask)
       this.newTask = ''
     }
   }

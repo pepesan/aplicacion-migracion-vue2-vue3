@@ -396,6 +396,275 @@ npm run serve
 Accedemos a http://localhost:8080/ para ver la aplicación en funcionamiento con Vue 3 sin compatibilidad para Vue 2.
 Si al quitar @vue/compat algo rompe, significa que todavía dependías de comportamiento de Vue 2.
 
+## Metemos nuevos componente y características de Vue 3
+Ahora que ya hemos eliminado la compatibilidad con Vue 2, podemos empezar a aprovechar las nuevas características de Vue 3, como el Composition API
+
+Metemos una nueva vista para mostrar el detalle de una tarea utilizando el Composition API src/views/NewTaskView.vue:
+```vue
+<template>
+  <section>
+    <h2>Nuevo componente Vue 3</h2>
+
+    <input v-model="task" placeholder="Nueva tarea" />
+    <button @click="saveTask">Añadir</button>
+
+    <p v-if="lastSaved">
+      Última tarea guardada: {{ lastSaved }}
+    </p>
+  </section>
+</template>
+
+<script setup>
+import { ref } from 'vue'
+
+const task = ref('')
+const lastSaved = ref('')
+
+function saveTask() {
+  if (!task.value.trim()) return
+  lastSaved.value = task.value
+  task.value = ''
+}
+</script>
+```
+Añadimos una nueva ruta para esta vista en src/router/index.js:
+```javascript
+import { createRouter, createWebHistory } from 'vue-router'
+import HomeView from '../views/HomeView.vue'
+import AboutView from '../views/AboutView.vue'
+import NewTaskView from '../views/NewTaskView.vue'
+
+const routes = [
+    {
+        path: '/',
+        name: 'home',
+        component: HomeView
+    },
+    {
+        path: '/about',
+        name: 'about',
+        component: AboutView
+    },
+    {
+        path: '/new-task',
+        name: 'new-task',
+        component: NewTaskView
+    }
+]
+
+const router = createRouter({
+    history: createWebHistory(),
+    routes
+})
+
+export default router
+```
+Modificamos el componente App.vue para añadir un enlace a la nueva vista:
+```vue
+<template>
+  <div id="app">
+    <h1>{{ title }}</h1>
+
+    <nav>
+      <router-link to="/">Inicio</router-link>
+      |
+      <router-link to="/about">Acerca de</router-link>
+      |
+      <router-link to="/new-task">Nuevo componente</router-link>
+    </nav>
+
+    <router-view />
+  </div>
+</template>
+```
+
+Y ya deberíamos poder acceder a http://localhost:8080/new-task para ver la nueva vista utilizando el Composition API de Vue 3.
+
+## Migración a Pinia
+Podemos aprovechar la migración para cambiar de Vuex a Pinia, que es la nueva librería de gestión de estado recomendada para Vue 3.
+Instalamos Pinia como dependencia:
+```bash
+npm install pinia
+```
+Creamos una nueva tienda utilizando Pinia en src/store/task.js:
+```javascript
+import { defineStore } from 'pinia'
+
+export const useTaskStore = defineStore('tasks', {
+    state: () => ({
+        tasks: ['Aprender Vue 2', 'Preparar migración a Vue 3']
+    }),
+    actions: {
+        addTask(task) {
+            this.tasks.push(task)
+        }
+    }
+})
+```
+Modificamos el main.js para utilizar Pinia en lugar de Vuex:
+```javascript
+import { createApp } from 'vue'
+import App from './App.vue'
+import router from './router'
+import store from './store'
+import BaseButton from './components/BaseButton.vue'
+// importamos Pinia
+import { createPinia } from 'pinia'
+// creamos la instancia de Pinia
+const pinia = createPinia()
+
+const app = createApp(App)
+
+app.component('BaseButton', BaseButton)
+
+app.config.globalProperties.$filters = {
+    uppercase(value) {
+        if (!value) return ''
+        return String(value).toUpperCase()
+    }
+}
+
+app.use(router)
+// cargamos el store de Pinia
+app.use(pinia)
+app.use(store)
+
+app.mount('#app')
+```
+
+Modificamos el componente HomeView.vue para utilizar la nueva tienda de Pinia en lugar de Vuex:
+```vue
+<template>
+  <section>
+    <h2>{{ subtitleUppercase }}</h2>
+
+    <TaskForm
+        v-model="newTask"
+        @save="handleSave"
+    />
+
+    <ul>
+      <li v-for="(task, index) in tasks" :key="index">
+        {{ task }}
+      </li>
+    </ul>
+  </section>
+</template>
+
+<script>
+import TaskForm from '../components/TaskForm.vue'
+import { useTaskStore } from '../store/task'
+
+export default {
+  name: 'HomeView',
+  components: {
+    TaskForm
+  },
+  data() {
+    return {
+      subtitle: 'lista de tareas',
+      newTask: ''
+    }
+  },
+  computed: {
+    taskStore() {
+      return useTaskStore()
+    },
+    tasks() {
+      return this.taskStore.tasks
+    },
+    subtitleUppercase() {
+      return this.subtitle.toUpperCase()
+    }
+  },
+  methods: {
+    handleSave() {
+      if (!this.newTask.trim()) return
+      this.taskStore.addTask(this.newTask)
+      this.newTask = ''
+    }
+  }
+}
+</script>
+```
+En este código, hemos importado la función `useTaskStore` desde nuestra tienda de Pinia y la hemos utilizado para acceder al estado de las tareas y a la acción para agregar nuevas tareas
+Volvemos a probar si arranca y va todo bien:
+```bash
+npm run serve
+```
+Accedemos a http://localhost:8080/ para ver la aplicación en funcionamiento con Vue 3 y Pinia.
+
+## Borramos el código de Vuex y las dependencias de Vuex ya que ya no lo necesitamos:
+```bash
+npm uninstall vuex
+rm -rf src/store/index.js
+```
+
+Modificamos el main.js para eliminar la referencia a Vuex:
+```javascript
+<template>
+  <section>
+    <h2>{{ subtitleUppercase }}</h2>
+
+    <TaskForm
+        v-model="newTask"
+        @save="handleSave"
+    />
+
+    <ul>
+      <li v-for="(task, index) in tasks" :key="index">
+        {{ task }}
+      </li>
+    </ul>
+  </section>
+</template>
+
+<script>
+import TaskForm from '../components/TaskForm.vue'
+import { useTaskStore } from '../store/task'
+
+export default {
+  name: 'HomeView',
+  components: {
+    TaskForm
+  },
+  data() {
+    return {
+      subtitle: 'lista de tareas',
+      newTask: ''
+    }
+  },
+  computed: {
+    taskStore() {
+      return useTaskStore()
+    },
+    tasks() {
+      return this.taskStore.tasks
+    },
+    subtitleUppercase() {
+      return this.subtitle.toUpperCase()
+    }
+  },
+  methods: {
+    handleSave() {
+      if (!this.newTask.trim()) return
+      this.taskStore.addTask(this.newTask)
+      this.newTask = ''
+    }
+  }
+}
+</script>
+```
+Volvemos a probar si arranca y va todo bien:
+```bash
+npm run serve
+```
+Accedemos a http://localhost:8080/ para ver la aplicación en funcionamiento con Vue 3 y Pinia sin ninguna referencia a Vuex.
+
+
+
+
+
 
 
 
