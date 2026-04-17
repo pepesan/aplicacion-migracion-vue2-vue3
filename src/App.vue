@@ -6,6 +6,8 @@
       <router-link to="/">Inicio</router-link>
       |
       <router-link to="/about">Acerca de</router-link>
+      |
+      <router-link to="/new-task">Nuevo componente</router-link>
     </nav>
 
     <router-view />
