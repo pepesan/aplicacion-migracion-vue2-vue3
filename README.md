@@ -35,7 +35,7 @@ Borramos el node_modules y el package-lock.json para asegurarnos de que se insta
 rm -rf node_modules package-lock.json
 npm install
 ```
-Creamos el fichero main.js con el siguiente contenido para configurar Vue 3 con compatibilidad para Vue 2:
+Creamos el fichero vue.config.js con el siguiente contenido para configurar Vue 3 con compatibilidad para Vue 2:
 
 ```javascript
 // vue.config.js
@@ -62,6 +62,7 @@ module.exports = {
 Cambiamos el código de main.js para crear la aplicación utilizando Vue 3 pero con compatibilidad para Vue 2:
 
 ```javascript
+// src/main.js
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
@@ -87,6 +88,7 @@ app.mount('#app')
 Cambiamos la configuración de Vue Router para utilizar la nueva sintaxis de Vue 3:
 
 ```javascript
+// src/router/index.js
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import AboutView from '../views/AboutView.vue'
@@ -113,6 +115,7 @@ export default router
 ```
 Cambiamos la configuración de Vuex para utilizar la nueva sintaxis de Vue 3:
 ```javascript
+// src/store/index.js
 import { createStore } from 'vuex'
 
 export default createStore({
@@ -134,6 +137,7 @@ export default createStore({
 Cambiamos el código de los componentes para utilizar la nueva sintaxis de Vue 3 pero manteniendo la compatibilidad con Vue 2.
 Empezamos por el componente HomeView.vue:
 ```vue
+// src/views/HomeView.vue
 <template>
   <section>
     <h2>{{ subtitleUppercase }}</h2>
@@ -213,6 +217,7 @@ Este aviso nos indica que el componente BaseButton está utilizando la sintaxis 
 ## Actualizar el código para Vue 3
 Empezamos por actualizar el componente TaskForm.vue para utilizar la nueva sintaxis de v-model de Vue 3:
 ```vue
+// src/components/TaskForm.vue
 <template>
   <div>
     <input
@@ -252,6 +257,7 @@ this.$emit('update:modelValue', ...)
 
 Hacemos lo propio con el componente BaseButton.vue para eliminar la sintaxis de $listeners:
 ```vue
+// src/components/BaseButton.vue
 <template>
   <button class="base-button">
     <slot />
@@ -274,12 +280,14 @@ export default {
 Antes teníamos:
 <button class="base-button" v-on="$listeners">
 Ahora simplemente eliminamos el v-on="$listeners" ya que en Vue 3 los eventos se manejan automáticamente a través de $attrs.
+
 Volvemos a probar si arranca y va todo bien
 
 ## Quitando la compatibilidad con Vue 2
 Ahora podemos empezar a probar a eliminar la compatibilidad con Vue 2 para aprovechar las nuevas características de Vue 3.
 Empezando por el componente TaskForm.vue, podemos eliminar la compatibilidad con Vue 2 :
 ```vue
+// src/components/TaskForm.vue
 <template>
   <div>
     <input
@@ -316,6 +324,7 @@ Debería desaparecer el aviso de compatibilidad relacionado con v-model en la co
 
 Hacemos lo propio con el componente BaseButton.vue para eliminar la compatibilidad con Vue 2:
 ```vue
+// src/components/BaseButton.vue
 <template>
   <button class="base-button">
     <slot />
@@ -341,7 +350,7 @@ export default {
 Al establecer `INSTANCE_LISTENERS: false` en la configuración de compatibilidad del componente,
 estamos indicando que este componente ya no es compatible con la sintaxis de $listeners de Vue 2, y que solo utilizará la nueva sintaxis de Vue 3 para manejar los eventos.
 
-
+## Quitamos la compatibilidad global para Vue 2
 Quitamos la compatibilidad con Vue 2 en el vue.config.js eliminando la configuración de compatibilidad global:
 ```javascript
 // vue.config.js
@@ -396,11 +405,12 @@ npm run serve
 Accedemos a http://localhost:8080/ para ver la aplicación en funcionamiento con Vue 3 sin compatibilidad para Vue 2.
 Si al quitar @vue/compat algo rompe, significa que todavía dependías de comportamiento de Vue 2.
 
-## Metemos nuevos componente y características de Vue 3
+## Metemos un componente con la nueva sintaxis de Vue 3 utilizando el Composition API
 Ahora que ya hemos eliminado la compatibilidad con Vue 2, podemos empezar a aprovechar las nuevas características de Vue 3, como el Composition API
 
 Metemos una nueva vista para mostrar el detalle de una tarea utilizando el Composition API src/views/NewTaskView.vue:
 ```vue
+// src/views/NewTaskView.vue
 <template>
   <section>
     <h2>Nuevo componente Vue 3</h2>
@@ -429,6 +439,7 @@ function saveTask() {
 ```
 Añadimos una nueva ruta para esta vista en src/router/index.js:
 ```javascript
+// src/router/index.js
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import AboutView from '../views/AboutView.vue'
@@ -461,6 +472,7 @@ export default router
 ```
 Modificamos el componente App.vue para añadir un enlace a la nueva vista:
 ```vue
+// src/App.vue
 <template>
   <div id="app">
     <h1>{{ title }}</h1>
@@ -477,6 +489,10 @@ Modificamos el componente App.vue para añadir un enlace a la nueva vista:
   </div>
 </template>
 ```
+Volvemos a probar si arranca y va todo bien:
+```bash
+npm run serve
+```
 
 Y ya deberíamos poder acceder a http://localhost:8080/new-task para ver la nueva vista utilizando el Composition API de Vue 3.
 
@@ -488,6 +504,7 @@ npm install pinia
 ```
 Creamos una nueva tienda utilizando Pinia en src/store/task.js:
 ```javascript
+// src/store/task.js
 import { defineStore } from 'pinia'
 
 export const useTaskStore = defineStore('tasks', {
@@ -501,8 +518,9 @@ export const useTaskStore = defineStore('tasks', {
     }
 })
 ```
-Modificamos el main.js para utilizar Pinia en lugar de Vuex:
+Modificamos el src/main.js para utilizar Pinia en lugar de Vuex:
 ```javascript
+// src/main.js
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
@@ -534,6 +552,7 @@ app.mount('#app')
 
 Modificamos el componente HomeView.vue para utilizar la nueva tienda de Pinia en lugar de Vuex:
 ```vue
+// src/views/HomeView.vue
 <template>
   <section>
     <h2>{{ subtitleUppercase }}</h2>
@@ -602,58 +621,33 @@ rm -rf src/store/index.js
 
 Modificamos el main.js para eliminar la referencia a Vuex:
 ```javascript
-<template>
-  <section>
-    <h2>{{ subtitleUppercase }}</h2>
+// src/main.js
+import { createApp } from 'vue'
+import App from './App.vue'
+import router from './router'
+// Ya no importamos el store de Vuex, ya que usaremos Pinia
+//import store from './store'
+import BaseButton from './components/BaseButton.vue'
+import { createPinia } from 'pinia'
 
-    <TaskForm
-        v-model="newTask"
-        @save="handleSave"
-    />
+const pinia = createPinia()
+const app = createApp(App)
 
-    <ul>
-      <li v-for="(task, index) in tasks" :key="index">
-        {{ task }}
-      </li>
-    </ul>
-  </section>
-</template>
+app.component('BaseButton', BaseButton)
 
-<script>
-import TaskForm from '../components/TaskForm.vue'
-import { useTaskStore } from '../store/task'
-
-export default {
-  name: 'HomeView',
-  components: {
-    TaskForm
-  },
-  data() {
-    return {
-      subtitle: 'lista de tareas',
-      newTask: ''
+app.config.globalProperties.$filters = {
+    uppercase(value) {
+        if (!value) return ''
+        return String(value).toUpperCase()
     }
-  },
-  computed: {
-    taskStore() {
-      return useTaskStore()
-    },
-    tasks() {
-      return this.taskStore.tasks
-    },
-    subtitleUppercase() {
-      return this.subtitle.toUpperCase()
-    }
-  },
-  methods: {
-    handleSave() {
-      if (!this.newTask.trim()) return
-      this.taskStore.addTask(this.newTask)
-      this.newTask = ''
-    }
-  }
 }
-</script>
+
+app.use(router)
+app.use(pinia)
+// quitamos la carga del store de vuex
+// app.use(store)
+
+app.mount('#app')
 ```
 Volvemos a probar si arranca y va todo bien:
 ```bash
@@ -665,6 +659,7 @@ Accedemos a http://localhost:8080/ para ver la aplicación en funcionamiento con
 Ahora que ya hemos tenemos todo migrado ya deberemos poder empezar a refactorizar el código para aprovechar al máximo las nuevas características de Vue 3, como el Composition API.
 Empezamos con el componente HomeView.vue, refactorizándolo para utilizar el Composition API en lugar de la sintaxis de Options API:
 ```vue
+// src/views/HomeView.vue
 <template>
   <section>
     <h2>{{ subtitleUppercase }}</h2>
@@ -707,6 +702,7 @@ function handleSave() {
 ```
 Seguimos con el componente BaseButton.vue, refactorizándolo para utilizar el Composition API:
 ```vue
+// src/components/BaseButton.vue
 <template>
   <button class="base-button">
     <slot />
@@ -730,6 +726,7 @@ En este caso, el componente BaseButton es muy simple y no tiene estado ni lógic
 
 Seguimos con el TaskForm.vue, refactorizándolo para utilizar el Composition API:
 ```vue
+// src/components/TaskForm.vue
 <template>
   <div>
     <input
@@ -763,6 +760,14 @@ function handleInput(event) {
 }
 </script>
 ```
+
+Con estos cambios, hemos refactorizado el código para utilizar el Composition API de Vue 3, lo que nos permite organizar mejor la lógica y el estado de nuestros componentes de una manera más flexible y reutilizable.
+Volvemos a probar si arranca y va todo bien:
+```bash
+npm run serve
+```
+Accedemos a http://localhost:8080/ para ver la aplicación en funcionamiento con Vue 3, Pinia y utilizando el Composition API en los componentes.
+
 
 
 
