@@ -198,7 +198,7 @@ Por ejemplo, podríamos ver un aviso como este:
   Details: https://v3-migration.vuejs.org/breaking-changes/v-model.html 
   at <TaskForm modelValue="" onUpdate:modelValue=fn onSave=fn<bound handleSave> >
 ```
-Este aviso nos indica que el componente TaskForm está utilizando la sintaxis de v-model de Vue 2, y que debemos actualizarlo para utilizar la nueva sintaxis de Vue 3.
+Este aviso nos indica que el componente HomeView está utilizando la sintaxis listeners de Vue 2, y que debemos actualizarlo para utilizar la nueva sintaxis de Vue 3.
 O este otro:
 ```
 [Vue warn]: (deprecation INSTANCE_LISTENERS) vm.$listeners has been removed. In Vue 3, parent v-on listeners are included in vm.$attrs and it is no longer necessary to separately use v-on="$listeners" if you are already using v-bind="$attrs". (Note: the Vue 3 behavior only applies if this compat config is disabled)
@@ -213,6 +213,7 @@ Este aviso nos indica que el componente BaseButton está utilizando la sintaxis 
 ## Actualizar el código para Vue 3
 Empezamos por actualizar el componente TaskForm.vue para utilizar la nueva sintaxis de v-model de Vue 3:
 ```vue
+// src/components/TaskForm.vue
 <template>
   <div>
     <input
@@ -252,6 +253,7 @@ this.$emit('update:modelValue', ...)
 
 Hacemos lo propio con el componente BaseButton.vue para eliminar la sintaxis de $listeners:
 ```vue
+// src/components/BaseButton.vue
 <template>
   <button class="base-button">
     <slot />
@@ -274,6 +276,7 @@ export default {
 Antes teníamos:
 <button class="base-button" v-on="$listeners">
 Ahora simplemente eliminamos el v-on="$listeners" ya que en Vue 3 los eventos se manejan automáticamente a través de $attrs.
+
 Volvemos a probar si arranca y va todo bien
 
 
