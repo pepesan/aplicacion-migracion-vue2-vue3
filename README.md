@@ -35,7 +35,7 @@ Borramos el node_modules y el package-lock.json para asegurarnos de que se insta
 rm -rf node_modules package-lock.json
 npm install
 ```
-Creamos el fichero main.js con el siguiente contenido para configurar Vue 3 con compatibilidad para Vue 2:
+Creamos el fichero vue.config.js con el siguiente contenido para configurar Vue 3 con compatibilidad para Vue 2:
 
 ```javascript
 // vue.config.js
@@ -62,6 +62,7 @@ module.exports = {
 Cambiamos el código de main.js para crear la aplicación utilizando Vue 3 pero con compatibilidad para Vue 2:
 
 ```javascript
+// src/main.js
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
@@ -87,6 +88,7 @@ app.mount('#app')
 Cambiamos la configuración de Vue Router para utilizar la nueva sintaxis de Vue 3:
 
 ```javascript
+// src/router/index.js
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import AboutView from '../views/AboutView.vue'
@@ -113,6 +115,7 @@ export default router
 ```
 Cambiamos la configuración de Vuex para utilizar la nueva sintaxis de Vue 3:
 ```javascript
+// src/store/index.js
 import { createStore } from 'vuex'
 
 export default createStore({
@@ -131,9 +134,9 @@ export default createStore({
   }
 })
 ```
-Cambiamos el código de los componentes para utilizar la nueva sintaxis de Vue 3 pero manteniendo la compatibilidad con Vue 2.
-Empezamos por el componente HomeView.vue:
+Empezamos por el componente HomeView.vue para :
 ```vue
+// src/views/HomeView.vue
 <template>
   <section>
     <h2>{{ subtitleUppercase }}</h2>
