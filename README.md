@@ -396,6 +396,98 @@ npm run serve
 Accedemos a http://localhost:8080/ para ver la aplicación en funcionamiento con Vue 3 sin compatibilidad para Vue 2.
 Si al quitar @vue/compat algo rompe, significa que todavía dependías de comportamiento de Vue 2.
 
+## Metemos un componente con la nueva sintaxis de Vue 3 utilizando el Composition API
+Creamos un nuevo componente llamado NewTaskView.vue que utiliza la nueva sintaxis de Vue 3
+```vue
+// src/views/NewTaskView.vue
+<template>
+  <section>
+    <h2>Nuevo componente Vue 3</h2>
+
+    <input v-model="task" placeholder="Nueva tarea" />
+    <button @click="saveTask">Añadir</button>
+
+    <p v-if="lastSaved">
+      Última tarea guardada: {{ lastSaved }}
+    </p>
+  </section>
+</template>
+
+<script setup>
+import { ref } from 'vue'
+
+const task = ref('')
+const lastSaved = ref('')
+
+function saveTask() {
+  if (!task.value.trim()) return
+  lastSaved.value = task.value
+  task.value = ''
+}
+</script>
+```
+Actualizamos el router para incluir la nueva ruta para el componente NewTaskView.vue:
+```javascript
+// src/router/index.js
+import { createRouter, createWebHistory } from 'vue-router'
+import HomeView from '../views/HomeView.vue'
+import AboutView from '../views/AboutView.vue'
+import NewTaskView from '../views/NewTaskView.vue'
+
+const routes = [
+    {
+        path: '/',
+        name: 'home',
+        component: HomeView
+    },
+    {
+        path: '/about',
+        name: 'about',
+        component: AboutView
+    },
+    {
+        path: '/new-task',
+        name: 'new-task',
+        component: NewTaskView
+    }
+]
+
+const router = createRouter({
+    history: createWebHistory(),
+    routes
+})
+
+export default router
+```
+
+Modificamos el código del App.vue para incluir un enlace a la nueva ruta:
+```vue
+// src/App.vue
+<template>
+  <div id="app">
+    <h1>{{ title }}</h1>
+
+    <nav>
+      <router-link to="/">Inicio</router-link>
+      |
+      <router-link to="/about">Acerca de</router-link>
+      |
+      <router-link to="/new-task">Nuevo componente</router-link>
+    </nav>
+
+    <router-view />
+  </div>
+</template>
+```
+
+Volvemos a probar si arranca y va todo bien:
+```bash
+npm run serve
+```
+Accedemos a http://localhost:8080/new-task para ver el nuevo componente utilizando la sintaxis de Vue 3 con el Composition API en funcionamiento. 
+
+
+
 
 
 
