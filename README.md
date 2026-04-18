@@ -341,7 +341,7 @@ export default {
 Al establecer `INSTANCE_LISTENERS: false` en la configuración de compatibilidad del componente,
 estamos indicando que este componente ya no es compatible con la sintaxis de $listeners de Vue 2, y que solo utilizará la nueva sintaxis de Vue 3 para manejar los eventos.
 
-
+## Quitamos la compatibilidad global para Vue 2
 Quitamos la compatibilidad con Vue 2 en el vue.config.js eliminando la configuración de compatibilidad global:
 ```javascript
 // vue.config.js
