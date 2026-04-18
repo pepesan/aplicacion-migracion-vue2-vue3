@@ -488,6 +488,7 @@ npm install pinia
 ```
 Creamos una nueva tienda utilizando Pinia en src/store/task.js:
 ```javascript
+// src/store/task.js
 import { defineStore } from 'pinia'
 
 export const useTaskStore = defineStore('tasks', {
@@ -503,6 +504,7 @@ export const useTaskStore = defineStore('tasks', {
 ```
 Modificamos el main.js para utilizar Pinia en lugar de Vuex:
 ```javascript
+// src/main.js
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
@@ -534,6 +536,7 @@ app.mount('#app')
 
 Modificamos el componente HomeView.vue para utilizar la nueva tienda de Pinia en lugar de Vuex:
 ```vue
+// src/views/HomeView.vue
 <template>
   <section>
     <h2>{{ subtitleUppercase }}</h2>
@@ -602,58 +605,33 @@ rm -rf src/store/index.js
 
 Modificamos el main.js para eliminar la referencia a Vuex:
 ```javascript
-<template>
-  <section>
-    <h2>{{ subtitleUppercase }}</h2>
+// src/main.js
+import { createApp } from 'vue'
+import App from './App.vue'
+import router from './router'
+// Ya no importamos el store de Vuex, ya que usaremos Pinia
+//import store from './store'
+import BaseButton from './components/BaseButton.vue'
+import { createPinia } from 'pinia'
 
-    <TaskForm
-        v-model="newTask"
-        @save="handleSave"
-    />
+const pinia = createPinia()
+const app = createApp(App)
 
-    <ul>
-      <li v-for="(task, index) in tasks" :key="index">
-        {{ task }}
-      </li>
-    </ul>
-  </section>
-</template>
+app.component('BaseButton', BaseButton)
 
-<script>
-import TaskForm from '../components/TaskForm.vue'
-import { useTaskStore } from '../store/task'
-
-export default {
-  name: 'HomeView',
-  components: {
-    TaskForm
-  },
-  data() {
-    return {
-      subtitle: 'lista de tareas',
-      newTask: ''
+app.config.globalProperties.$filters = {
+    uppercase(value) {
+        if (!value) return ''
+        return String(value).toUpperCase()
     }
-  },
-  computed: {
-    taskStore() {
-      return useTaskStore()
-    },
-    tasks() {
-      return this.taskStore.tasks
-    },
-    subtitleUppercase() {
-      return this.subtitle.toUpperCase()
-    }
-  },
-  methods: {
-    handleSave() {
-      if (!this.newTask.trim()) return
-      this.taskStore.addTask(this.newTask)
-      this.newTask = ''
-    }
-  }
 }
-</script>
+
+app.use(router)
+app.use(pinia)
+// quitamos la carga del store de vuex
+// app.use(store)
+
+app.mount('#app')
 ```
 Volvemos a probar si arranca y va todo bien:
 ```bash
