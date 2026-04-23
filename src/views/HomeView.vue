@@ -1,6 +1,6 @@
 <template>
   <section>
-    <h2>{{ uppercase(subtitle) }}</h2>
+    <h2>{{ subtitle.toUpperCase() }}</h2>
 
     <TaskForm
         v-model="newTask"
@@ -8,7 +8,7 @@
     />
 
     <ul>
-      <li v-for="(task, index) in tasks" :key="index">
+      <li v-for="(task, index) in store.tasks" :key="index">
         {{ task }}
       </li>
     </ul>
@@ -16,34 +16,25 @@
 </template>
 
 <script>
+import { ref } from 'vue'
 import TaskForm from '../components/TaskForm.vue'
+import { useTasksStore } from '../stores/tasks'
 
 export default {
   name: 'HomeView',
-  components: {
-    TaskForm
-  },
-  data() {
-    return {
-      subtitle: 'lista de tareas',
-      newTask: ''
+  components: { TaskForm },
+  setup() {
+    const store = useTasksStore()
+    const subtitle = ref('lista de tareas')
+    const newTask = ref('')
+
+    function handleSave() {
+      if (!newTask.value.trim()) return
+      store.addTask(newTask.value)
+      newTask.value = ''
     }
-  },
-  computed: {
-    tasks() {
-      return this.$store.state.tasks
-    }
-  },
-  methods: {
-    uppercase(value) {
-      if (!value) return ''
-      return String(value).toUpperCase()
-    },
-    handleSave() {
-      if (!this.newTask.trim()) return
-      this.$store.dispatch('addTask', this.newTask)
-      this.newTask = ''
-    }
+
+    return { store, subtitle, newTask, handleSave }
   }
 }
 </script>
