@@ -6,6 +6,10 @@
       <router-link to="/">Inicio</router-link>
       |
       <router-link to="/about">Acerca de</router-link>
+      |
+      <router-link to="/test-composition">Composition API</router-link>
+      |
+      <router-link to="/api">Componente API</router-link>
     </nav>
 
     <router-view />
@@ -17,7 +21,7 @@ export default {
   name: 'App',
   data() {
     return {
-      title: 'Demo Vue 2.7'
+      title: 'Demo Vue 3 Migration'
     }
   }
 }

@@ -1,20 +1,22 @@
-import Vue from 'vue'
+import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
-import store from './store'
+import { storeOptions, createStoreInstance } from './store'
 import BaseButton from './components/BaseButton.vue'
 
-Vue.config.productionTip = false
+const app = createApp(App)
 
-Vue.component('BaseButton', BaseButton)
+app.component('BaseButton', BaseButton)
 
-Vue.filter('uppercase', function (value) {
+app.config.globalProperties.$filters = {
+  uppercase: function (value) {
     if (!value) return ''
     return String(value).toUpperCase()
-})
+  }
+}
 
-new Vue({
-    router,
-    store,
-    render: h => h(App)
-}).$mount('#app')
+const store = createStoreInstance(storeOptions)
+
+app.use(router)
+app.use(store)
+app.mount('#app')

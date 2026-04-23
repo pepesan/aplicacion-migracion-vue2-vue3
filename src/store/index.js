@@ -1,4 +1,3 @@
-import Vue from 'vue'
 import Vuex from 'vuex'
 
 const storeOptions = {
@@ -18,12 +17,7 @@ const storeOptions = {
 }
 
 function createStoreInstance(options) {
-    if (typeof Vuex.createStore === 'function') {
-        return Vuex.createStore(options)
-    }
-
-    Vue.use(Vuex)
-    return new Vuex.Store(options)
+    return Vuex.createStore(options)
 }
 
 export { storeOptions, createStoreInstance }

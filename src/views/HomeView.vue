@@ -1,6 +1,6 @@
 <template>
   <section>
-    <h2>{{ subtitle | uppercase }}</h2>
+    <h2>{{ uppercase(subtitle) }}</h2>
 
     <TaskForm
         v-model="newTask"
@@ -35,6 +35,10 @@ export default {
     }
   },
   methods: {
+    uppercase(value) {
+      if (!value) return ''
+      return String(value).toUpperCase()
+    },
     handleSave() {
       if (!this.newTask.trim()) return
       this.$store.dispatch('addTask', this.newTask)

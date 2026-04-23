@@ -1,8 +1,8 @@
 <template>
   <div>
     <input
-        :value="value"
-        @input="$emit('input', $event.target.value)"
+        :value="modelValue"
+        @input="$emit('update:modelValue', $event.target.value)"
         placeholder="Nueva tarea"
     />
 
@@ -16,7 +16,7 @@
 export default {
   name: 'TaskForm',
   props: {
-    value: {
+    modelValue: {
       type: String,
       default: ''
     }
