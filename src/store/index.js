@@ -1,9 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
-Vue.use(Vuex)
-
-export default new Vuex.Store({
+const storeOptions = {
     state: {
         tasks: ['Aprender Vue 2', 'Preparar migración a Vue 3']
     },
@@ -17,4 +15,17 @@ export default new Vuex.Store({
             commit('ADD_TASK', task)
         }
     }
-})
+}
+
+function createStoreInstance(options) {
+    if (typeof Vuex.createStore === 'function') {
+        return Vuex.createStore(options)
+    }
+
+    Vue.use(Vuex)
+    return new Vuex.Store(options)
+}
+
+export { storeOptions, createStoreInstance }
+
+export default createStoreInstance(storeOptions)
